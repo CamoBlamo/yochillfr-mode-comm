@@ -1,0 +1,16 @@
+{
+  "counter": 3,
+  "tickets": {
+    "1557586592493867080": {
+      "number": 3,
+      "answers": [
+        {
+          "label": "Reason for opening",
+          "value": "sorry for the ping again. and ty for putting up with it"
+        }
+      ],
+      "openedAt": 1791427983078,
+      "claimedAt": 1791428007994
+    }
+  }
+}
