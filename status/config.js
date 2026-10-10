@@ -1,7 +1,7 @@
 module.exports = {
     CATEGORY_NAME: 'Server Status⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯',
 
-    GAME_CODE: 'yVHYq',
+    GAME_CODE: 'MfVBv',
 
     INVITE: 'discord.gg/cs1rp',
 
