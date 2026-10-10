@@ -27,12 +27,12 @@ module.exports = {
             components: [
                 new ContainerBuilder()
                     .addTextDisplayComponents(
-                        new TextDisplayBuilder().setContent('## 📊 Server Statistics'),
+                        new TextDisplayBuilder().setContent('## <:stats:1556986231991308340> Server Statistics'),
                         new TextDisplayBuilder().setContent(
                             [
-                                `👥 **Total Members:** \`${totalMembers}\``,
+                                `<:member:1556986201016115332> **Total Members:** \`${totalMembers}\``,
                                 `🟢 **Online Members:** \`${onlineMembers}\``,
-                                `🚀 **Server Boosts:** \`${boosts}\``
+                                `<:boost:1556986151125131294> **Server Boosts:** \`${boosts}\``
                             ].join('\n')
                         )
                     )
