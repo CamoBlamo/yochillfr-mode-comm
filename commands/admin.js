@@ -86,7 +86,10 @@ module.exports = {
         await interaction.deferReply({ flags: MessageFlags.Ephemeral })
 
         try {
-            await runCommand(`${ROLE_COMMANDS[role]} ${user}`)
+            const command = `${ROLE_COMMANDS[role]} ${user}`
+            console.log(`[admin] Sending ERLC command: ${command}`)
+            const response = await runCommand(command)
+            console.log('[admin] ERLC response:', JSON.stringify(response))
 
             await interaction.editReply({
                 components: [
