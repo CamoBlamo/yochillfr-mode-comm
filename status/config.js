@@ -17,7 +17,7 @@ module.exports = {
     channels: [
         { key: 'members', template: 'Members: {members}' },
         { key: 'status', template: 'Server Status: {status}' },
-        { key: 'code', template: 'Game Code: {code}' },
+        { key: 'code', template: 'Game Code: MfVBv' },
         { key: 'invite', template: '{invite}' },
     ],
 }

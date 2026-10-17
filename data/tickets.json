@@ -1,5 +1,5 @@
 {
-  "counter": 3,
+  "counter": 4,
   "tickets": {
     "1557586592493867080": {
       "number": 3,
@@ -11,6 +11,24 @@
       ],
       "openedAt": 1791427983078,
       "claimedAt": 1791428007994
+    },
+    "1558515048333451338": {
+      "claimedAt": 1791665575747
+    },
+    "1558677774829363281": {
+      "number": 4,
+      "answers": [
+        {
+          "label": "Reason for opening",
+          "value": "Partnership"
+        },
+        {
+          "label": "Additional details",
+          "value": ""
+        }
+      ],
+      "openedAt": 1791688140505,
+      "claimedAt": 1791691177187
     }
   }
 }
