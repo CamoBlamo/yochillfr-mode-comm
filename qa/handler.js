@@ -13,6 +13,8 @@ const {
     ButtonStyle,
     ComponentType,
     PermissionFlagsBits,
+    AttachmentBuilder,
+    FileBuilder,
 } = require('discord.js')
 const config = require('./config')
 const store = require('./store')
@@ -26,12 +28,12 @@ for (let i = 0; i < config.questions.length; i += PAGE_SIZE) {
     pages.push(config.questions.slice(i, i + PAGE_SIZE))
 }
 
-// Keep the whole submission under Discord's 4000-char limit for one message
-const questionChars = config.questions.reduce((n, q) => n + (q.question || q.label || '').length + 12, 0)
-const ANSWER_MAX = Math.max(
-    50,
-    Math.min(config.MAX_ANSWER_LENGTH, Math.floor((3300 - questionChars) / Math.max(1, config.questions.length)))
-)
+// Full answer length is allowed. If the submission is too long for one Discord
+// message (4000 chars), answers are shortened in the message and the full
+// answers are attached as a .txt file.
+const ANSWER_MAX = Math.min(4000, config.MAX_ANSWER_LENGTH)
+const ANSWER_BUDGET = 3300 // characters of questions + answers that fit in the message
+const truncate = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s)
 
 const text = (content) => new TextDisplayBuilder().setContent(content)
 const separator = () => new SeparatorBuilder().setDivider(true).setSpacing(SeparatorSpacingSize.Small)
@@ -167,6 +169,20 @@ async function handleNext(interaction) {
 
 // ---------- Send to admin channel ----------
 
+const questionTitle = (q, i) => `${i + 1}. ${q.question || q.label}`
+
+// Full answers as a .txt, attached when the message had to shorten them
+function buildAnswersFile(user, answers) {
+    const body = [
+        `Trial Mod Q/A - ${user.tag} (${user.id})`,
+        `Submitted: ${new Date().toISOString().replace('T', ' ').slice(0, 19)} UTC`,
+        '',
+        ...config.questions.flatMap((q, i) => [questionTitle(q, i), answers[i] || '(no answer)', '']),
+    ].join('\n')
+    return new AttachmentBuilder(Buffer.from(body, 'utf8'), { name: `qa-${user.username}.txt`.slice(0, 100) })
+}
+
+// Returns { container, files }
 function buildSubmission(user, answers) {
     const container = new ContainerBuilder()
         .addTextDisplayComponents(
@@ -175,11 +191,25 @@ function buildSubmission(user, answers) {
         )
         .addSeparatorComponents(separator())
 
+    // Shorten answers only if everything won't fit in one message
+    const questionChars = config.questions.reduce((n, q, i) => n + questionTitle(q, i).length + 8, 0)
+    const answerChars = answers.reduce((n, a) => n + (a?.length ?? 0), 0)
+    const shorten = questionChars + answerChars > ANSWER_BUDGET
+    const perAnswer = Math.max(60, Math.floor((ANSWER_BUDGET - questionChars) / Math.max(1, config.questions.length)))
+
     config.questions.forEach((q, i) => {
-        container.addTextDisplayComponents(
-            text(`**${i + 1}. ${q.question || q.label}**\n${answers[i] || '*No answer*'}`)
-        )
+        const answer = answers[i] ? (shorten ? truncate(answers[i], perAnswer) : answers[i]) : '*No answer*'
+        container.addTextDisplayComponents(text(`**${questionTitle(q, i)}**\n${answer}`))
     })
+
+    const files = []
+    if (shorten) {
+        const file = buildAnswersFile(user, answers)
+        files.push(file)
+        container
+            .addTextDisplayComponents(text('-# Some answers were shortened to fit. Full answers are in the file below.'))
+            .addFileComponents(new FileBuilder().setURL(`attachment://${file.name}`))
+    }
 
     container
         .addSeparatorComponents(separator())
@@ -196,14 +226,16 @@ function buildSubmission(user, answers) {
             )
         )
 
-    return container
+    return { container, files }
 }
 
 async function submit(interaction, answers) {
     const channel = await interaction.client.channels.fetch(config.ADMIN_CHANNEL_ID)
+    const { container, files } = buildSubmission(interaction.user, answers)
 
     const msg = await channel.send({
-        components: [buildSubmission(interaction.user, answers)],
+        components: [container],
+        files,
         flags: MessageFlags.IsComponentsV2,
         allowedMentions: { parse: [] },
     })
