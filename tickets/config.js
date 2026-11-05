@@ -26,7 +26,7 @@ module.exports = {
             emoji: '🛠️',
             channelPrefix: 'general',
             parentId: '',
-            roleIds: ['1532971092195545260', '1551445904324567051', '1540655068049707139', '1540654715954790431'],
+            roleIds: ['1532971092195545260', '1551445904324567051', '1540655068049707139', '1540654715954790431', '1551442850724581427', '1551442819103850496', '1551905343187976232', '1551442787688390737', '1551905453900955689'],
             questions: [
                 { label: 'Reason for opening', description: 'What do you need help with?', style: 'paragraph', required: true, minLength: 10, maxLength: 1000 },
                 { label: 'Additional details', description: 'Anything else staff should know. Links, screenshots, timestamps.', style: 'paragraph', required: false, maxLength: 1000 },
